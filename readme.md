@@ -1,5 +1,10 @@
-# CSI2300
+# Vaccination
+
 This repository contains files for a semester-long project in an "Introduction to Data Science" course at Baylor University.
+
+Furthermore, this is also work for a graduate student, who intends to publish a paper related to this analysis.
+
+Everyone is aware that I am doing this for research and for coursework.
 
 The instructor for my fall 2024 section of CSI 2300 is Dr. Rachel Wilkerson.
 

@@ -1,88 +1,171 @@
-# Define the CRAN mirror (if not already set)
-options(repos = c(CRAN = "https://cloud.r-project.org/"))
-
-# Check if required packages are installed, if not, install them
-required_packages <- c("shiny", "ggplot2", "dplyr", "plotly")
-
-for(pkg in required_packages) {
-  if (!require(pkg, character.only = TRUE)) {
-    install.packages(pkg)  # Now will use the default CRAN mirror
-    library(pkg, character.only = TRUE)
-  }
-}
+library(shiny)
 
 # Define UI
 ui <- fluidPage(
-  titlePanel("Vaccination Impact on Disease Spread"),
+  # Set page title
+  titlePanel("Choose Your State"),
   
-  sidebarLayout(
-    sidebarPanel(
-      sliderInput("vaccination_rate", 
-                  "Vaccination Rate:", 
-                  min = 0, 
-                  max = 1, 
-                  value = 0.7,
-                  step = 0.05),
-      actionButton("start_button", "Start Simulation")
+  # Add a dropdown menu for states
+  selectInput(
+    inputId = "state",
+    label = "Select a State:",
+    choices = c(
+      "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", 
+      "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", 
+      "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", 
+      "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", 
+      "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", 
+      "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", 
+      "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", 
+      "Rhode Island", "South Carolina", "South Dakota", "Tennessee", 
+      "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", 
+      "Wisconsin", "Wyoming"
     ),
-    
-    mainPanel(
-      plotlyOutput("plot")
-    )
+    selected = "Texas"
+  ),
+  
+  # Add space for the circle to appear
+  div(
+    style = "display: inline-block; vertical-align: top; padding: 20px;",
+    uiOutput("circle_ui")
   )
 )
 
 # Define server logic
 server <- function(input, output) {
   
-  observeEvent(input$start_button, {
-    # Initialize simulation parameters
-    vaccination_rate <- input$vaccination_rate
-    n_balls <- 100
-    n_vaccinated <- round(n_balls * vaccination_rate)
+  # Define a reactive expression for state nickname
+  state_nickname <- reactive({
+    state <- input$state
+    switch(state,
+      "Alabama" = "Alabamian", 
+      "Alaska" = "Alaskan", 
+      "Arizona" = "Arizonan", 
+      "Arkansas" = "Arkansan", 
+      "California" = "Californian", 
+      "Colorado" = "Coloradan", 
+      "Connecticut" = "Connecticuter", 
+      "Delaware" = "Delawarean", 
+      "Florida" = "Floridian", 
+      "Georgia" = "Georgian", 
+      "Hawaii" = "Hawaiian", 
+      "Idaho" = "Idahoan", 
+      "Illinois" = "Illinoisan", 
+      "Indiana" = "Indianan", 
+      "Iowa" = "Iowan", 
+      "Kansas" = "Kansasan", 
+      "Kentucky" = "Kentuckian", 
+      "Louisiana" = "Louisianan", 
+      "Maine" = "Mainer", 
+      "Maryland" = "Marylander", 
+      "Massachusetts" = "Massachusettsan", 
+      "Michigan" = "Michigander", 
+      "Minnesota" = "Minnesotan", 
+      "Mississippi" = "Mississippian", 
+      "Missouri" = "Missourian", 
+      "Montana" = "Montanan", 
+      "Nebraska" = "Nebraskan", 
+      "Nevada" = "Nevadan", 
+      "New Hampshire" = "New Hampshirite", 
+      "New Jersey" = "New Jerseyan", 
+      "New Mexico" = "New Mexican", 
+      "New York" = "New Yorker", 
+      "North Carolina" = "North Carolinian", 
+      "North Dakota" = "North Dakotan", 
+      "Ohio" = "Ohioan", 
+      "Oklahoma" = "Oklahoman", 
+      "Oregon" = "Oregonian", 
+      "Pennsylvania" = "Pennsylvanian", 
+      "Rhode Island" = "Rhode Islander", 
+      "South Carolina" = "South Carolinian", 
+      "South Dakota" = "South Dakotan", 
+      "Tennessee" = "Tennessean", 
+      "Texas" = "Texan", 
+      "Utah" = "Utahan", 
+      "Vermont" = "Vermonter", 
+      "Virginia" = "Virginian", 
+      "Washington" = "Washingtonian", 
+      "West Virginia" = "West Virginian", 
+      "Wisconsin" = "Wisconsiner", 
+      "Wyoming" = "Wyomingite"
+    )
+  })
+  
+  # Render circle and hover effect
+  output$circle_ui <- renderUI({
+    state <- input$state
+    nickname <- state_nickname()
     
-    # Create a dataframe for balls
-    balls <- data.frame(
-      id = 1:n_balls,
-      x = runif(n_balls),  # Random x positions
-      y = runif(n_balls),  # Random y positions
-      status = c(rep("unvaccinated", n_balls - n_vaccinated), rep("vaccinated", n_vaccinated)),
-      infected = FALSE
+    # Set circle color
+    circle_color <- switch(state,
+      "Texas" = "red", 
+      "Florida" = "blue", 
+      "California" = "green",
+      "New York" = "purple",
+      "Illinois" = "orange",
+      "Alabama" = "yellow",
+      "Michigan" = "pink",
+      "Ohio" = "brown",
+      "Georgia" = "cyan",
+      "North Carolina" = "magenta",
+      "Virginia" = "violet",
+      "South Carolina" = "lightblue",
+      "Tennessee" = "lightgreen",
+      "Nevada" = "indigo",
+      "Hawaii" = "coral",
+      "Arizona" = "teal",
+      "Washington" = "peachpuff",
+      "Missouri" = "lightyellow",
+      "Minnesota" = "fuchsia",
+      "Kansas" = "gold",
+      "Colorado" = "tan",
+      "Louisiana" = "darkolivegreen",
+      "Indiana" = "peru",
+      "Maine" = "salmon",
+      "Maryland" = "dodgerblue",
+      "Mississippi" = "crimson",
+      "Montana" = "springgreen",
+      "Nebraska" = "lawngreen",
+      "North Dakota" = "midnightblue",
+      "South Dakota" = "seashell",
+      "Wyoming" = "limegreen",
+      "Oklahoma" = "chocolate",
+      "New Jersey" = "slateblue",
+      "Connecticut" = "lightpink",
+      "Kentucky" = "lightseagreen",
+      "Delaware" = "thistle",
+      "Rhode Island" = "beige",
+      "West Virginia" = "hotpink",
+      "Utah" = "yellowgreen",
+      "Oregon" = "indianred",
+      "Alaska" = "yellow",
+      "Idaho" = "orchid",
+      "California" = "salmon",
+      "New Mexico" = "plum",
+      "Illinois" = "ivory",
+      "Ohio" = "khaki",
+      "Michigan" = "darkorange",
+      "Pennsylvania" = "turquoise",
+      "Vermont" = "mistyrose",
+      "Massachusetts" = "powderblue",
+      "New Hampshire" = "wheat",
+      "Wisconsin" = "lightskyblue",
+      "Iowa" = "green",
+      "Montana" = "gray",
+      "Wyoming" = "lightcoral",
+      "Tennessee" = "firebrick",
+      "Colorado" = "forestgreen"
     )
     
-    # Randomly select one ball to be infected
-    infected_index <- sample(1:n_balls, 1)
-    balls$infected[infected_index] <- TRUE
-    
-    # Define function to spread the disease
-    spread_infection <- function(balls) {
-      for (i in 1:nrow(balls)) {
-        if (balls$infected[i] == TRUE) {
-          # Infect other unvaccinated balls that are close enough
-          for (j in 1:nrow(balls)) {
-            if (balls$infected[j] == FALSE && balls$status[j] == "unvaccinated" &&
-                sqrt((balls$x[i] - balls$x[j])^2 + (balls$y[i] - balls$y[j])^2) < 0.1) {
-              balls$infected[j] <- TRUE
-            }
-          }
-        }
-      }
-      return(balls)
-    }
-    
-    # Simulate disease spread
-    balls <- spread_infection(balls)
-    
-    # Plot the results
-    output$plot <- renderPlotly({
-      gg <- ggplot(balls, aes(x = x, y = y, color = ifelse(infected, "red", ifelse(status == "vaccinated", "green", "orange")))) +
-        geom_point(size = 5) +
-        scale_color_identity() +
-        theme_void() +
-        theme(legend.position = "none")
-      
-      ggplotly(gg)
-    })
+    # Create the circle and hover text
+    tagList(
+      div(
+        id = "circle",
+        style = paste("width: 100px; height: 100px; border-radius: 50%; background-color: ", circle_color, ";"),
+        title = nickname,
+        HTML("<br><br><div id='hover-text' style='display:none;'>Hovering over a circle will show this text: ", nickname, "</div>")
+      )
+    )
   })
 }
 

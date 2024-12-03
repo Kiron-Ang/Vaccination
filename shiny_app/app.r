@@ -1,19 +1,11 @@
-# Check if 'shiny' package is installed, if not, install it
-if (!requireNamespace("shiny", quietly = TRUE)) {
-  install.packages("shiny", repos = 'https://cloud.r-project.org/')
-}
+packages = c("shiny", "RSocrata")
+new_packages = packages[!(packages %in% installed.packages()[,"Package"])]
+if(length(new_packages)) install.packages(new_packages, repos = 'https://cloud.r-project.org/')
+lapply(packages, library, character.only = TRUE)
 
-# Load the 'shiny' library into the R session
-library(shiny)
-
-# Define UI
-ui <- fluidPage(
-  # Set page title
+ui = fluidPage(
   titlePanel("Modeling the Effect of Vaccination on Disease Spread Using Real USA Vaccination Coverage Estimates"),
-  
-  # Use a sidebar layout to move the circle to the main area
   sidebarLayout(
-    # Sidebar panel for the dropdown
     sidebarPanel(
       selectInput(
         inputId = "state",
@@ -29,25 +21,20 @@ ui <- fluidPage(
         selected = "Texas"
       )
     ),
-    
-    # Main panel for the circle
     mainPanel(
-      # Space for the circle to appear, with styling to make it centered and larger
       div(
-        style = "text-align: center; padding: 20px;",  # Center the circle
+        style = "display: flex; justify-content: center; align-items: center; height: 100vh;", 
         uiOutput("circle_ui")
       )
     )
   ),
-  
-  # Include CSS for high contrast support
   tags$head(
     tags$style(HTML("
       @media (forced-colors: active) {
         #circle {
           border-radius: 50%;
-          width: 200px;  /* Increased size */
-          height: 200px; /* Increased size */
+          width: 200px;
+          height: 200px;
           background-color: ButtonFace;
           border: 3px solid ButtonText;
         }
@@ -56,12 +43,9 @@ ui <- fluidPage(
   )
 )
 
-# Define server logic
-server <- function(input, output) {
-  
-  # Define a reactive expression for state nickname
-  state_nickname <- reactive({
-    state <- input$state
+server = function(input, output) {
+  state_nickname = reactive({
+    state = input$state
     switch(state,
       "Alabama" = "Alabamian", "Alaska" = "Alaskan", "Arizona" = "Arizonan", "Arkansas" = "Arkansan", 
       "California" = "Californian", "Colorado" = "Coloradan", "Connecticut" = "Connecticuter", 
@@ -81,13 +65,11 @@ server <- function(input, output) {
     )
   })
   
-  # Render circle and hover effect
-  output$circle_ui <- renderUI({
-    state <- input$state
-    nickname <- state_nickname()
+  output$circle_ui = renderUI({
+    state = input$state
+    nickname = state_nickname()
     
-    # Set circle color based on state
-    circle_color <- switch(state,
+    circle_color = switch(state,
       "Texas" = "red", "Florida" = "blue", "California" = "green", "New York" = "purple", 
       "Illinois" = "orange", "Alabama" = "yellow", "Michigan" = "pink", "Ohio" = "brown", 
       "Georgia" = "cyan", "North Carolina" = "magenta", "Virginia" = "violet", 
@@ -107,7 +89,6 @@ server <- function(input, output) {
       "Colorado" = "forestgreen"
     )
     
-    # Create the circle and hover text
     tagList(
       div(
         id = "circle",
@@ -119,5 +100,4 @@ server <- function(input, output) {
   })
 }
 
-# Run the application
 shinyApp(ui = ui, server = server)

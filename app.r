@@ -1,3 +1,9 @@
+# Check if 'shiny' package is installed, if not, install it
+if (!requireNamespace("shiny", quietly = TRUE)) {
+  install.packages("shiny", repos = 'https://cloud.r-project.org/')
+}
+
+# Load the 'shiny' library into the R session
 library(shiny)
 
 # Define UI
@@ -96,7 +102,7 @@ server <- function(input, output) {
     state <- input$state
     nickname <- state_nickname()
     
-    # Set circle color
+    # Set circle color based on state
     circle_color <- switch(state,
       "Texas" = "red", 
       "Florida" = "blue", 
@@ -157,6 +163,71 @@ server <- function(input, output) {
       "Colorado" = "forestgreen"
     )
     
+    # Detect the background color (light or dark theme)
+    is_dark_theme <- ifelse(
+      grepl("rgb(0, 0, 0)", htmltools::browsable(tagList(div(style = "background-color: black")))), TRUE, FALSE
+    )
+    
+    # Adjust circle color for dark theme if necessary
+    if (is_dark_theme) {
+      # If it's a dark theme, use lighter colors to maintain contrast
+      circle_color <- switch(circle_color,
+        "red" = "lightcoral",
+        "blue" = "lightskyblue",
+        "green" = "lightgreen",
+        "purple" = "lavender",
+        "orange" = "lightsalmon",
+        "yellow" = "lightyellow",
+        "pink" = "lightpink",
+        "brown" = "khaki",
+        "cyan" = "lightcyan",
+        "magenta" = "lightmagenta",
+        "violet" = "plum",
+        "lightblue" = "lightsteelblue",
+        "lightgreen" = "honeydew",
+        "indigo" = "lightblue",
+        "coral" = "peachpuff",
+        "teal" = "paleturquoise",
+        "peachpuff" = "wheat",
+        "fuchsia" = "orchid",
+        "gold" = "lightgoldenrodyellow",
+        "tan" = "bisque",
+        "darkolivegreen" = "olive",
+        "peru" = "wheat",
+        "salmon" = "mistyrose",
+        "dodgerblue" = "skyblue",
+        "crimson" = "tomato",
+        "springgreen" = "mintcream",
+        "lawngreen" = "yellowgreen",
+        "midnightblue" = "darkslateblue",
+        "seashell" = "peachpuff",
+        "limegreen" = "chartreuse",
+        "chocolate" = "rosybrown",
+        "slateblue" = "lightsteelblue",
+        "lightpink" = "mistyrose",
+        "lightseagreen" = "turquoise",
+        "thistle" = "lavender",
+        "hotpink" = "pink",
+        "yellowgreen" = "darkolivegreen",
+        "indianred" = "darkred",
+        "orchid" = "lightblue",
+        "plum" = "palevioletred",
+        "ivory" = "lightgray",
+        "khaki" = "beige",
+        "darkorange" = "orange",
+        "turquoise" = "powderblue",
+        "mistyrose" = "lavenderblush",
+        "powderblue" = "lightblue",
+        "wheat" = "lightwheat",
+        "lightskyblue" = "skyblue",
+        "green" = "mediumseagreen",
+        "gray" = "lightgray",
+        "lightcoral" = "tomato",
+        "firebrick" = "salmon",
+        "forestgreen" = "lightgreen"
+      )
+    }
+
     # Create the circle and hover text
     tagList(
       div(

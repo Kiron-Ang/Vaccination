@@ -46,7 +46,7 @@ ui = fluidPage(
         align-items: center;
         font-size: 12px;
         font-weight: bold;
-        border: 3px solid green;
+        border: 3px solid black;
         background-color: transparent;
       }
 
@@ -100,7 +100,6 @@ ui = fluidPage(
     )
   ),
 
-
   )
 )
 
@@ -139,35 +138,19 @@ server = function(input, output) {
     )
 
     state_data = vaccine_data[vaccine_data$geography == state, ]
+    coverage = ifelse(nrow(state_data) > 0, round(state_data$coverage_estimate[1], 0), NA)
+    num_circles = 100
+    circle_percentage = 0
 
-    coverage = ifelse(nrow(state_data) > 0, round(state_data$coverage_estimate[1], 1), NA)
+    circle_html = div(class = "circle-container")
 
-    circle_color = "blue"
+    for (i in 1:num_circles) {
+      color <- ifelse(circle_percentage >= coverage, "blue", "orange")
+      circle_html = tagAppendChild(circle_html, div(class = "circle", style = paste("background-color: ", color, ";")))
+      circle_percentage = circle_percentage + 1
+    }
 
-    circle_html = tagList(
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
-      div(class = "circle", style = paste("background-color: ", circle_color, ";"))
-    )
-
-    div(class = "circle-container", circle_html)
+    circle_html
   })
 
   output$coverage_text = renderText({
@@ -184,7 +167,7 @@ server = function(input, output) {
 
     state_data = vaccine_data[vaccine_data$geography == state, ]
 
-    coverage = ifelse(nrow(state_data) > 0, round(state_data$coverage_estimate[1], 1), NA)
+    coverage = ifelse(nrow(state_data) > 0, state_data$coverage_estimate[1], NA)
     paste("Vaccinated ", nickname, "s in 2023: ", coverage, "%", sep = "")
   })
 }

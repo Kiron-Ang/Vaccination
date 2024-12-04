@@ -1,87 +1,105 @@
-# Install required packages if they are not already installed
 packages = c("shiny", "RSocrata")
-new_packages = packages[!(packages %in% installed.packages()[,"Package"])] # Find packages not installed
-if(length(new_packages)) install.packages(new_packages, repos = 'https://cloud.r-project.org/') # Install missing packages
-lapply(packages, library, character.only = TRUE) # Load the packages
+new_packages = packages[!(packages %in% installed.packages()[,"Package"])]
+if(length(new_packages)) install.packages(new_packages, repos = 'https://cloud.r-project.org/')
+lapply(packages, library, character.only = TRUE)
 
-# Load vaccination data from the CDC's Socrata platform
-data = read.socrata("https://data.cdc.gov/resource/ee48-w5t6.json") # Read HPV, Tetanus, MenACWY vaccination data
-data$coverage_estimate = as.numeric(data$coverage_estimate) # Convert coverage_estimate to numeric
-data = data[data$vaccine %in% c("HPV", "Tetanus", "≥1 Dose MenACWY"), ] # Filter by selected vaccines
-data = data[data$dimension_type == "Age", ] # Filter by age dimension
-data = data[data$dimension == "13-17 Years", ] # Filter by 13-17 years age group
-data = data[data$geography_type == "States/Local Areas", ] # Filter by geography type
-# List of states for filtering
-states = c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-            "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
-            "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-            "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
-            "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
-            "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
-            "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
-            "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "District of Columbia")
-data = data[data$geography %in% states, ] # Filter by states
-data = data[data$year_season == "2023", ] # Filter by the year 2023
+data = read.socrata("https://data.cdc.gov/resource/ee48-w5t6.json")
+data$coverage_estimate = as.numeric(data$coverage_estimate)
+data = data[data$vaccine %in% c("HPV", "Tetanus", "≥1 Dose MenACWY"), ]
+data = data[data$dimension_type == "Age", ]
+data = data[data$dimension == "13-17 Years", ]
+data = data[data$geography_type == "States/Local Areas", ]
+states = c("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", 
+           "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", 
+           "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", 
+           "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey", 
+           "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", 
+           "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", 
+           "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", 
+           "District of Columbia")
+data = data[data$geography %in% states, ]
+data = data[data$year_season == "2023", ]
 
-# Separate the data by vaccine type
-hpv = data[data$vaccine == "HPV" & data$dose == "≥1 Dose, Males and Females", ] # HPV vaccine data
-menacwy = data[data$vaccine == "≥1 Dose MenACWY", ] # MenACWY vaccine data
-tetanus = data[data$vaccine == "Tetanus" & data$dose == "≥1 Dose Td or Tdap", ] # Tetanus vaccine data
+hpv = data[data$vaccine == "HPV" & data$dose == "≥1 Dose, Males and Females", ]
+menacwy = data[data$vaccine == "≥1 Dose MenACWY", ]
+tetanus = data[data$vaccine == "Tetanus" & data$dose == "≥1 Dose Td or Tdap", ]
 
-# Load seasonal influenza data from the CDC
-influenza = read.socrata("https://data.cdc.gov/resource/vh55-3he6.json") # Read influenza vaccination data
-influenza$coverage_estimate = as.numeric(influenza$coverage_estimate) # Convert coverage_estimate to numeric
-influenza = influenza[influenza$vaccine == "Seasonal Influenza", ] # Filter by influenza vaccine
-influenza = influenza[influenza$dimension_type == "Age", ] # Filter by age dimension
-influenza = influenza[influenza$geography_type == "States/Local Areas", ] # Filter by geography type
-influenza = influenza[influenza$geography %in% states & influenza$month == "5" & influenza$year_season == "2023-24", ] # Filter by geography, month, and year
+influenza = read.socrata("https://data.cdc.gov/resource/vh55-3he6.json")
+influenza$coverage_estimate = as.numeric(influenza$coverage_estimate)
+influenza = influenza[influenza$vaccine == "Seasonal Influenza", ]
+influenza = influenza[influenza$dimension_type == "Age", ]
+influenza = influenza[influenza$geography_type == "States/Local Areas", ]
+influenza = influenza[influenza$geography %in% states & influenza$month == "5" & influenza$year_season == "2023-24", ]
 
-# Define the user interface of the Shiny app
 ui = fluidPage(
-  titlePanel("Modeling the Effect of Vaccination on Disease Spread Using Real USA Vaccination Coverage Estimates"),
+  titlePanel(
+    div(style = "text-align: center;", 
+        h1("Modeling the Effect of Vaccination", style = "margin-bottom: 0;"), 
+        h2("on Disease Spread Using Real USA Vaccination Coverage Estimates", style = "margin-top: 0;")
+    )
+  ),
   sidebarLayout(
     sidebarPanel(
-      # Dropdown to select a state
       selectInput(
         inputId = "state",
         label = "Select a State:",
-        choices = states, # States list
-        selected = "Texas" # Default selected state
+        choices = states,
+        selected = "Texas"
       ),
-      # Dropdown to select a vaccine
       selectInput(
         inputId = "vaccine",
         label = "Select a Vaccine:",
-        choices = c("HPV", "Tetanus", "≥1 Dose MenACWY"), # Vaccine options
-        selected = "HPV" # Default selected vaccine
+        choices = c("HPV, ≥1 Dose, Males and Females", "Tetanus, ≥1 Dose Td or Tdap", "≥1 Dose MenACWY", "Seasonal Influenza"),
+        selected = "HPV, ≥1 Dose, Males and Females"
       )
     ),
     mainPanel(
-      # Display the circle representing vaccination coverage
       div(
-        style = "display: flex; justify-content: center; align-items: center; height: 100vh;", 
-        uiOutput("circle_ui") # UI element for displaying circle
+        style = "position: absolute; top: 20px; right: 20px; font-size: 24px; font-weight: bold;", 
+        textOutput("coverage_text")
+      ),
+      div(
+        style = "display: flex; justify-content: center; align-items: center; position: relative; height: 500px;",
+        uiOutput("circle_ui")
       )
     )
   ),
   tags$head(
-    # Define custom CSS for the circle appearance
+    tags$title("Vaccination App"),
     tags$style(HTML("
-      @media (forced-colors: active) {
-        #circle {
-          border-radius: 50%;
-          width: 200px;
-          height: 200px;
-          background-color: ButtonFace;
-          border: 3px solid ButtonText;
-        }
-      }
-    "))) # CSS for circle style
+.circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: bold;
+  border: 3px solid black;
+  background-color: transparent;
+}
+
+.circle-container {
+  display: grid; /* Change to grid */
+  grid-template-columns: repeat(10, 1fr); /* 10 equal columns */
+  gap: 10px; /* Space between circles */
+  width: auto; /* Allow container width to adjust dynamically */
+  height: auto; /* Allow container height to adjust dynamically */
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.circle-container .circle {
+  margin: 0; /* Remove individual margins on circles, as gap is now handled by the grid */
+}
+
+    "))
+  )
 )
 
-# Define the server logic of the Shiny app
 server = function(input, output) {
-  # Reactive expression to generate state nickname based on selection
   state_nickname = reactive({
     state = input$state
     switch(state,
@@ -103,61 +121,57 @@ server = function(input, output) {
     )
   })
 
-  # Render the circle with vaccine coverage estimate
   output$circle_ui = renderUI({
     state = input$state
     vaccine = input$vaccine
     nickname = state_nickname()
 
-    # Choose the correct dataset based on selected vaccine
-    vaccine_data <- switch(vaccine,
-      "HPV" = hpv,
-      "Tetanus" = tetanus,
-      "≥1 Dose MenACWY" = menacwy
+    vaccine_data = switch(vaccine,
+      "HPV, ≥1 Dose, Males and Females" = hpv, 
+      "Tetanus, ≥1 Dose Td or Tdap" = tetanus, 
+      "≥1 Dose MenACWY" = menacwy,
+      "Seasonal Influenza" = influenza
     )
 
-    # Filter data for the selected state
     state_data = vaccine_data[vaccine_data$geography == state, ]
 
-    # Get the coverage estimate, handling cases where data is missing
-    coverage = if (nrow(state_data) > 0) {
-      round(state_data$coverage_estimate[1], 2)
-    } else {
-      "No Data"
-    }
+    coverage = ifelse(nrow(state_data) > 0, round(state_data$coverage_estimate[1], 1), NA)
 
-    # Choose a circle color based on state
-    circle_color = switch(state,
-      "Texas" = "red", "Florida" = "blue", "California" = "green", "New York" = "purple", 
-      "Illinois" = "orange", "Alabama" = "yellow", "Michigan" = "pink", "Ohio" = "brown", 
-      "Georgia" = "cyan", "North Carolina" = "magenta", "Virginia" = "violet", 
-      "South Carolina" = "lightblue", "Tennessee" = "lightgreen", "Nevada" = "indigo", 
-      "Hawaii" = "coral", "Arizona" = "teal", "Washington" = "peachpuff", "Missouri" = "lightyellow", 
-      "Minnesota" = "fuchsia", "Kansas" = "gold", "Colorado" = "tan", "Louisiana" = "darkolivegreen", 
-      "Indiana" = "peru", "Maine" = "salmon", "Maryland" = "dodgerblue", "Mississippi" = "crimson", 
-      "Montana" = "springgreen", "Nebraska" = "lawngreen", "North Dakota" = "midnightblue", 
-      "South Dakota" = "seashell", "Wyoming" = "limegreen", "Oklahoma" = "chocolate", 
-      "New Jersey" = "slateblue", "Connecticut" = "lightpink", "Kentucky" = "lightseagreen", 
-      "Delaware" = "thistle", "Rhode Island" = "beige", "West Virginia" = "hotpink", 
-      "Utah" = "yellowgreen", "Oregon" = "indianred", "Alaska" = "yellow", "Idaho" = "orchid", 
-      "California" = "salmon", "New Mexico" = "plum", "Illinois" = "ivory", "Ohio" = "khaki", 
-      "Michigan" = "darkorange", "Pennsylvania" = "turquoise", "Vermont" = "mistyrose", 
-      "Massachusetts" = "powderblue", "New Hampshire" = "wheat", "Wisconsin" = "lightskyblue", 
-      "Iowa" = "green", "Montana" = "gray", "Wyoming" = "lightcoral", "Tennessee" = "firebrick", 
-      "Colorado" = "forestgreen", "District of Columbia" = "darkblue"
+    circle_color = "blue"
+
+    circle_html = tagList(
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";"))
     )
-    
-    # Render the circle and coverage text
-    tagList(
-      div(
-        id = "circle",
-        style = paste("width: 200px; height: 200px; border-radius: 50%; background-color: ", circle_color, ";"),
-        title = paste(nickname, ": ", coverage, "% Coverage", sep = ""),
-        HTML(paste("<div style='font-size: 30px; color: white;'>", coverage, "%</div>", sep = ""))
-      )
+
+    div(class = "circle-container", circle_html)
+  })
+
+  output$coverage_text = renderText({
+    state = input$state
+    vaccine = input$vaccine
+    nickname = state_nickname()
+
+    vaccine_data = switch(vaccine,
+      "HPV, ≥1 Dose, Males and Females" = hpv, 
+      "Tetanus, ≥1 Dose Td or Tdap" = tetanus, 
+      "≥1 Dose MenACWY" = menacwy,
+      "Seasonal Influenza" = influenza
     )
+
+    state_data = vaccine_data[vaccine_data$geography == state, ]
+
+    coverage = ifelse(nrow(state_data) > 0, round(state_data$coverage_estimate[1], 1), NA)
+    paste("% of ", nickname, "s vaccinated against ", vaccine, " in 2023: ", coverage, "%", sep = "")
   })
 }
 
-# Run the Shiny app
 shinyApp(ui = ui, server = server)

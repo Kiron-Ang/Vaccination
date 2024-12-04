@@ -1,3 +1,5 @@
+# https://8zjn1m-kiron-ang.shinyapps.io/shiny_app
+
 packages = c("shiny", "RSocrata")
 new_packages = packages[!(packages %in% installed.packages()[,"Package"])]
 if(length(new_packages)) install.packages(new_packages, repos = 'https://cloud.r-project.org/')
@@ -32,10 +34,43 @@ influenza = influenza[influenza$geography_type == "States/Local Areas", ]
 influenza = influenza[influenza$geography %in% states & influenza$month == "5" & influenza$year_season == "2023-24", ]
 
 ui = fluidPage(
+
+  tags$head(
+    tags$style(HTML("
+      .circle {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: bold;
+        border: 3px solid green;
+        background-color: transparent;
+      }
+
+      .circle-container {
+        display: grid;
+        grid-template-columns: repeat(10, 1fr);
+        gap: 10px; 
+        width: auto; 
+        height: auto; 
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+
+      .circle-container .circle {
+        margin: 0; 
+      }
+    ")
+  ),
+
   titlePanel(
     div(style = "text-align: center;", 
         h1("Modeling the Effect of Vaccination", style = "margin-bottom: 0;"), 
-        h2("on Disease Spread Using Real USA Vaccination Coverage Estimates", style = "margin-top: 0;")
+        h1("on Disease Spread Using Real USA Vaccination Coverage Estimates", style = "margin-top: 0;")
     )
   ),
   sidebarLayout(
@@ -64,38 +99,8 @@ ui = fluidPage(
       )
     )
   ),
-  tags$head(
-    tags$title("Vaccination App"),
-    tags$style(HTML("
-.circle {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  font-weight: bold;
-  border: 3px solid black;
-  background-color: transparent;
-}
 
-.circle-container {
-  display: grid; /* Change to grid */
-  grid-template-columns: repeat(10, 1fr); /* 10 equal columns */
-  gap: 10px; /* Space between circles */
-  width: auto; /* Allow container width to adjust dynamically */
-  height: auto; /* Allow container height to adjust dynamically */
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
 
-.circle-container .circle {
-  margin: 0; /* Remove individual margins on circles, as gap is now handled by the grid */
-}
-
-    "))
   )
 )
 
@@ -149,6 +154,16 @@ server = function(input, output) {
       div(class = "circle", style = paste("background-color: ", circle_color, ";")),
       div(class = "circle", style = paste("background-color: ", circle_color, ";")),
       div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
+      div(class = "circle", style = paste("background-color: ", circle_color, ";")),
       div(class = "circle", style = paste("background-color: ", circle_color, ";"))
     )
 
@@ -170,7 +185,7 @@ server = function(input, output) {
     state_data = vaccine_data[vaccine_data$geography == state, ]
 
     coverage = ifelse(nrow(state_data) > 0, round(state_data$coverage_estimate[1], 1), NA)
-    paste("% of ", nickname, "s vaccinated against ", vaccine, " in 2023: ", coverage, "%", sep = "")
+    paste("Vaccinated ", nickname, "s in 2023: ", coverage, "%", sep = "")
   })
 }
 

@@ -158,9 +158,11 @@ ui = fluidPage(
                  that are 13-17 years old. Select a vaccine and a state to
                  get a wonderful grid of circles on the right that shows the 
                  percentage of youth in the state that have the vaccine 
-                 in 2023. Below, you'll see three more circle plots that
-                 look very similar, but they're for different states that
-                 have similar policies! Compare and contrast!"),
+                 in 2023. Click on different states and vaccines to compare
+                 and contrast! There are 100 circles in total. Pretend that 
+                 they represent 100 random children in the state. The orange
+                 circles are children that are vaccinated (or vaxxed). This 
+                 helps you understand what these percentages really mean."),
           
           tags$h4("Why is this important?"),
           tags$p("Below each grid of circles is a list of policies that the
@@ -185,7 +187,7 @@ ui = fluidPage(
                  each state."),
           
           tags$h4("Where can I find the data/code for this?"),
-          tags$p("Please see the GitHub repository below for more information:
+          tags$p("Please see this GitHub repository for more information:
                  https://github.com/Kiron-Ang/Vaccination")
       )
     ),

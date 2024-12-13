@@ -154,10 +154,10 @@ ui = fluidPage(
           tags$p("This is a Shiny web application created to illustrate 
                  vaccination coverage differences between U.S. states.
                  Here, data from the Centers of Disease Control and Prevention
-                 (CDC) is displayed to show the coverage estimates for people
+                 (CDC) are displayed to show the coverage estimates for people
                  that are 13-17 years old. Select a vaccine and a state to
                  get a wonderful grid of circles on the right that shows the 
-                 percentage of youth in the state that have the vaccine 
+                 percentage of youth in the state that had the vaccine 
                  in 2023. Click on different states and vaccines to compare
                  and contrast! There are 100 circles in total. Pretend that 
                  they represent 100 random children in the state. The orange

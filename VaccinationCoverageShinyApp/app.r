@@ -188,7 +188,9 @@ ui = fluidPage(
           
           tags$h4("Where can I find the data/code for this?"),
           tags$p("Please see this GitHub repository for more information:
-                 https://github.com/Kiron-Ang/Vaccination")
+                 https://github.com/Kiron-Ang/Vaccination.
+                 If you have any other questions, please feel free to email
+                 me at kiron_ang1@baylor.edu!")
       )
     ),
     

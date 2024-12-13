@@ -1,8 +1,8 @@
 # Load required packages
-packages <- c("shiny", "RSocrata", "dplyr")
+packages = c("shiny", "RSocrata", "dplyr")
 
 # Check if required packages are installed, and install missing ones
-new_packages <- setdiff(packages, installed.packages()[,"Package"])
+new_packages = setdiff(packages, installed.packages()[,"Package"])
 if(length(new_packages)) install.packages(new_packages, 
                                           repos = "https://cloud.r-project.org")
 
@@ -10,7 +10,7 @@ if(length(new_packages)) install.packages(new_packages,
 invisible(lapply(packages, require, character.only = TRUE))
 
 # Define a dataset of U.S. states and their corresponding nicknames
-state_data <- data.frame(
+state_data = data.frame(
   state = c("Alabama", "Alaska", "Arizona", "Arkansas", "California", 
             "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
             "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", 
@@ -37,19 +37,19 @@ state_data <- data.frame(
 )
 
 # Create a named vector to quickly look up nicknames by state
-state_nicknames <- setNames(state_data$nickname, state_data$state)
+state_nicknames = setNames(state_data$nickname, state_data$state)
 
 # Function to fetch vaccination data from the CDC
-fetch_data <- function(url, vaccine_type = NULL, vaccine_dose = NULL, 
+fetch_data = function(url, vaccine_type = NULL, vaccine_dose = NULL, 
                        year_season = NULL) {
   # Read data from the provided URL (using Socrata API)
-  data <- read.socrata(url)
+  data = read.socrata(url)
   
   # Ensure that coverage estimate is numeric
-  data$coverage_estimate <- as.numeric(data$coverage_estimate)
+  data$coverage_estimate = as.numeric(data$coverage_estimate)
   
   # Predefined filters for vaccine data (age group, geography, etc.)
-  filters <- list(
+  filters = list(
     vaccine = c("HPV", "Tetanus", "≥1 Dose MenACWY", "Seasonal Influenza"),
     dimension_type = "Age",
     dimension = "13-17 Years",
@@ -59,7 +59,7 @@ fetch_data <- function(url, vaccine_type = NULL, vaccine_dose = NULL,
   )
   
   # Apply the filters to the data
-  data <- data %>%
+  data = data %>%
     filter(vaccine %in% filters$vaccine,
            dimension_type == filters$dimension_type,
            dimension == filters$dimension,
@@ -68,10 +68,10 @@ fetch_data <- function(url, vaccine_type = NULL, vaccine_dose = NULL,
            year_season == year_season)
   
   # If a specific vaccine type is specified, further filter the data
-  if (!is.null(vaccine_type)) data <- data %>% filter(vaccine == vaccine_type)
+  if (!is.null(vaccine_type)) data = data %>% filter(vaccine == vaccine_type)
   
   # If a specific vaccine dose is specified, further filter the data
-  if (!is.null(vaccine_dose)) data <- data %>% filter(dose == vaccine_dose)
+  if (!is.null(vaccine_dose)) data = data %>% filter(dose == vaccine_dose)
   
   # Return the filtered data
   return(data)
@@ -260,12 +260,11 @@ server = function(input, output) {
     for (i in 1:num_circles) {
       color = ifelse(circle_percentage >= coverage, "", "orange")
       circle_html = tagAppendChild(circle_html, 
-                      div(class = "circle", style = paste("background-color: ", 
-                          color, ";"),
-                    if (color == "orange") {
-                      tagAppendChild(div(class = "circle"), "Vaxxed")
-                    }
-      ))
+        div(class = "circle", style = paste("background-color: ", color, ";"),
+            if (color == "orange") {
+              tagAppendChild(div(class = "circle"), "Vaxxed")
+              }
+        ))
       circle_percentage = circle_percentage + 1
     }
     

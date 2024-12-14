@@ -1,3 +1,4 @@
+install.packages("rsconnect", repos = "https://cloud.r-project.org")
 library("rsconnect")
 
 # Set account information for deploying the application to shinyapps.io

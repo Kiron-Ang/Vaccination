@@ -1,14 +1,4 @@
-# Define a vector containing the required package names
-packages = c("rsconnect")
-
-# Identify which packages are not installed on the system
-new_packages = packages[!(packages %in% installed.packages()[,"Package"])]
-
-# Install the missing packages from the specified repository
-if(length(new_packages)) install.packages(new_packages, repos = 'https://cloud.r-project.org/')
-
-# Load the required packages into the R session
-lapply(packages, library, character.only = TRUE)
+library("rsconnect")
 
 # Set account information for deploying the application to shinyapps.io
 rsconnect::setAccountInfo(

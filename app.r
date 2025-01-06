@@ -88,8 +88,7 @@ influenza = fetch_data("https://data.cdc.gov/resource/vh55-3he6.json",
                        "Seasonal Influenza", NULL, "2023-24")
 
 # Read state-specific immunization requirements and exemption policies data
-phase_1 = read.csv(
-  "https://github.com/Kiron-Ang/Vaccination/blob/main/phase_1.csv?raw=true")
+phase_1 = read.csv("phase_1.csv")
 
 # Define the UI for the Shiny app
 ui = fluidPage(

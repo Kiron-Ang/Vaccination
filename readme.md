@@ -1,4 +1,4 @@
-# VaxStates: Vaccination Policies and Coverage Estimates in the United States
+# VacStates: Vaccination Policies and Coverage Estimates in the United States
 
 HPV, MenAWCY, and Tetanus Vaccination Coverage Estimates: https://data.cdc.gov/Teen-Vaccinations/Vaccination-Coverage-among-Adolescents-13-17-Years/ee48-w5t6
 

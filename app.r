@@ -1,13 +1,4 @@
-# Load required packages
-packages = c("shiny", "RSocrata", "dplyr")
-
-# Check if required packages are installed, and install missing ones
-new_packages = setdiff(packages, installed.packages()[,"Package"])
-if(length(new_packages)) install.packages(new_packages, 
-                                          repos = "https://cloud.r-project.org")
-
-# Load all required packages
-invisible(lapply(packages, require, character.only = TRUE))
+library("shiny")
 
 # Define a dataset of U.S. states and their corresponding nicknames
 state_data = data.frame(
@@ -39,53 +30,11 @@ state_data = data.frame(
 # Create a named vector to quickly look up nicknames by state
 state_nicknames = setNames(state_data$nickname, state_data$state)
 
-# Function to fetch vaccination data from the CDC
-fetch_data = function(url, vaccine_type = NULL, vaccine_dose = NULL, 
-                       year_season = NULL) {
-  # Read data from the provided URL (using Socrata API)
-  data = read.socrata(url)
-  
-  # Ensure that coverage estimate is numeric
-  data$coverage_estimate = as.numeric(data$coverage_estimate)
-  
-  # Predefined filters for vaccine data (age group, geography, etc.)
-  filters = list(
-    vaccine = c("HPV", "Tetanus", "≥1 Dose MenACWY", "Seasonal Influenza"),
-    dimension_type = "Age",
-    dimension = "13-17 Years",
-    geography_type = "States/Local Areas",
-    geography = state_data$state,
-    year_season = year_season
-  )
-  
-  # Apply the filters to the data
-  data = data %>%
-    filter(vaccine %in% filters$vaccine,
-           dimension_type == filters$dimension_type,
-           dimension == filters$dimension,
-           geography_type == filters$geography_type,
-           geography %in% filters$geography,
-           year_season == year_season)
-  
-  # If a specific vaccine type is specified, further filter the data
-  if (!is.null(vaccine_type)) data = data %>% filter(vaccine == vaccine_type)
-  
-  # If a specific vaccine dose is specified, further filter the data
-  if (!is.null(vaccine_dose)) data = data %>% filter(dose == vaccine_dose)
-  
-  # Return the filtered data
-  return(data)
-}
-
-# Fetch vaccination data for different vaccine types and doses
-hpv = fetch_data("https://data.cdc.gov/resource/ee48-w5t6.json", "HPV", 
-                 "≥1 Dose, Males and Females", "2023")
-menacwy = fetch_data("https://data.cdc.gov/resource/ee48-w5t6.json", 
-                     "≥1 Dose MenACWY", NULL, "2023")
-tetanus = fetch_data("https://data.cdc.gov/resource/ee48-w5t6.json", 
-                     "Tetanus", "≥1 Dose Td or Tdap", "2023")
-influenza = fetch_data("https://data.cdc.gov/resource/vh55-3he6.json", 
-                       "Seasonal Influenza", NULL, "2023-24")
+# Read in 2023 vaccination coverage data from the CDC
+hpv = read.csv("hpv.csv")
+menacwy = read.csv("menacwy.csv")
+tetanus = read.csv("tetanus.csv")
+influenza = read.csv("influenza.csv")
 
 # Read state-specific immunization requirements and exemption policies data
 all_states = read.csv("all_states.csv")
@@ -212,7 +161,8 @@ server = function(input, output) {
   
   # Render the state immunization information and exemption policies dynamically
   output$state_info = renderUI({
-    state_data = all_states %>% filter(state == input$state)
+    # Replace dplyr::filter with base R subset
+    state_data = subset(all_states, state == input$state)
     div(style = "padding: 15px; border-radius: 8px; font-size: 14px;", 
         tags$h4(paste(input$state, 
                       " Immunization Requirements & Exemption Policies:")), 
@@ -250,7 +200,7 @@ server = function(input, output) {
                           "Tetanus, ≥1 Dose Td or Tdap" = tetanus,
                           "≥1 Dose MenACWY" = menacwy,
                           "Seasonal Influenza" = influenza)
-    state_data = vaccine_data %>% filter(geography == input$state)
+    state_data = subset(vaccine_data, geography == input$state)
     coverage = ifelse(nrow(state_data) > 0, 
                       round(state_data$coverage_estimate[1], 0), NA)
     
@@ -281,7 +231,7 @@ server = function(input, output) {
                           "Tetanus, ≥1 Dose Td or Tdap" = tetanus,
                           "≥1 Dose MenACWY" = menacwy,
                           "Seasonal Influenza" = influenza)
-    state_data = vaccine_data %>% filter(geography == input$state)
+    state_data = subset(vaccine_data, geography == input$state)
     coverage = ifelse(nrow(state_data) > 0, state_data$coverage_estimate[1], NA)
     paste("Vaccinated ", state_nickname(), "s in 2023: ", coverage, "%", 
           sep = "")

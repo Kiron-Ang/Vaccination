@@ -88,7 +88,7 @@ influenza = fetch_data("https://data.cdc.gov/resource/vh55-3he6.json",
                        "Seasonal Influenza", NULL, "2023-24")
 
 # Read state-specific immunization requirements and exemption policies data
-phase_1 = read.csv("phase_1.csv")
+all_states = read.csv("all_states.csv")
 
 # Define the UI for the Shiny app
 ui = fluidPage(
@@ -212,7 +212,7 @@ server = function(input, output) {
   
   # Render the state immunization information and exemption policies dynamically
   output$state_info = renderUI({
-    state_data = phase_1 %>% filter(state == input$state)
+    state_data = all_states %>% filter(state == input$state)
     div(style = "padding: 15px; border-radius: 8px; font-size: 14px;", 
         tags$h4(paste(input$state, 
                       " Immunization Requirements & Exemption Policies:")), 

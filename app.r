@@ -135,7 +135,7 @@ ui = fluidPage(
   ),
   
   # Title of the app
-  titlePanel("VacStates: Vaccination Policies and Coverage Estimates in the United States"),
+  titlePanel("VacState: School Vaccination Policies and Coverage Estimates in the United States"),
   
   # Sidebar layout with a state selector and vaccine type selector
   sidebarLayout(
@@ -179,15 +179,15 @@ ui = fluidPage(
           
           tags$h4("Who made this?"),
           tags$p("My name is Kiron Ang, and I am the sole developer 
-                 responsible for the creation of this web application.
-                 However, this is part of a larger project by a graduate
+                 responsible for this web application. However, this is 
+                 part of a larger project by an anthropology graduate
                  student at Baylor University named Blair Coe Schweiger.
-                 I worked with her to collected the policy information for
+                 I worked with her to collect the policy information for
                  each state."),
           
           tags$h4("Where can I find the data/code for this?"),
           tags$p("Please see this GitHub repository for more information:
-                 https://github.com/Kiron-Ang/Vaccination.
+                 https://github.com/Kiron-Ang/VacState.
                  If you have any other questions, please feel free to email
                  me at kiron_ang1@baylor.edu!")
       )

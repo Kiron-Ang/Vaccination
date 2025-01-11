@@ -37,7 +37,7 @@ tetanus = read.csv("tetanus.csv")
 influenza = read.csv("influenza.csv")
 
 # Read state-specific immunization requirements and exemption policies data
-all_states = read.csv("all_states.csv")
+state_policies = read.csv("state_policies.csv")
 
 # Define the UI for the Shiny app
 ui = fluidPage(
@@ -162,7 +162,7 @@ server = function(input, output) {
   # Render the state immunization information and exemption policies dynamically
   output$state_info = renderUI({
     # Replace dplyr::filter with base R subset
-    state_data = subset(all_states, state == input$state)
+    state_data = subset(state_policies, state == input$state)
     div(style = "padding: 15px; border-radius: 8px; font-size: 14px;", 
         tags$h4(paste(input$state, 
                       " Immunization Requirements & Exemption Policies:")), 

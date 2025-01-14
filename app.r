@@ -84,7 +84,7 @@ ui = fluidPage(
   ),
   
   # Title of the app
-  titlePanel("VacState: School Vaccination Policies and Coverage Estimates in the United States"),
+  titlePanel("VacState: School Vaccination Policies and Coverage Estimates by U.S. State"),
   
   # Sidebar layout with a state selector and vaccine type selector
   sidebarLayout(

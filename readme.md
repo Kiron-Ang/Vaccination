@@ -41,6 +41,7 @@ To run the app locally, follow these steps:
    In RStudio, navigate to the folder where the files are located, and run the following commands:
 	 ```
    install.packages("shiny")
+   setwd("replace/this/with/cloned/repository/path")
 	 shiny::runApp()
    ```
 

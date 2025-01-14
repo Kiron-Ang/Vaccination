@@ -34,11 +34,11 @@ To run the app locally, follow these steps:
    ```
 
 2. **Install R and RStudio** (if not already installed):
-   - [Download R](https://cran.r-project.org/)
-   - [Download RStudio](https://posit.co/download/rstudio-desktop/)
+   - [Download R](https://cran.r-project.org)
+   - [Download RStudio](https://posit.co/download/rstudio-desktop)
 
-3. **Install required R packages**:
-   In RStudio, navigate to the folder where the files are located, and run the following:
+3. **Install required R packages and run app**:
+   In RStudio, navigate to the folder where the files are located, and run the following commands:
 	 ```
    install.packages("shiny")
 	 shiny::runApp()

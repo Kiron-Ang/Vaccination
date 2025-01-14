@@ -2,8 +2,7 @@
 
 **VacState** is a web application that visualizes vaccination coverage estimates across U.S. states for four key vaccines: **HPV**, **MenACWY**, **Tetanus**, and **Influenza**. Users can explore and compare vaccination rates among adolescents aged 13-17 years across various states, alongside detailed school vaccination policies and exemption guidelines. 
 
-You can interact with the live application here:  
-[VacState Web Application](https://kiron.shinyapps.io/vacstate).
+You can interact with the live application here: [VacState Web Application](https://kiron.shinyapps.io/vacstate).
 
 ## Features
 
@@ -62,9 +61,8 @@ Imagine you're a public health researcher comparing vaccination coverage for the
 
 ## Contributing
 
-Contributions are welcome! If you’d like to contribute to this project, please fork the repository, make your changes, and submit a pull request.
+Contributions are welcome! If you’d like to contribute to this project, please follow the instructions below:
 
-### How to Contribute:
 1. Fork the repository.
 2. Create a new branch for your changes.
 3. Commit your changes to the new branch.
@@ -72,7 +70,7 @@ Contributions are welcome! If you’d like to contribute to this project, please
 
 ## License
 
-This project is licensed under the MIT License - see the [license.txt](license.txt) file for details.
+This project is licensed under the MIT License; see the [license.txt](license.txt) file for details.
 
 ## Acknowledgments
 
@@ -81,7 +79,6 @@ This project is licensed under the MIT License - see the [license.txt](license.t
 
 ## Contact
 
-For questions, comments, or feedback, please contact:  
-**Kiron Ang**  
-Email: [kiron_ang1@baylor.edu](mailto:kiron_ang1@baylor.edu)  
-GitHub: [https://github.com/Kiron-Ang](https://github.com/Kiron-Ang)
+For questions, comments, or feedback, please contact **Kiron Ang**.
+- Email: [kiron_ang1@baylor.edu](mailto:kiron_ang1@baylor.edu)  
+- GitHub: [https://github.com/Kiron-Ang](https://github.com/Kiron-Ang)

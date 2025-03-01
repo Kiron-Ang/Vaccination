@@ -131,12 +131,12 @@ ui = fluidPage(
                  responsible for this web application. However, this is 
                  part of a larger project by an anthropology graduate
                  student at Baylor University named Blair Coe Schweiger.
-                 I worked with her to collect the policy information for
-                 each state."),
+                 Blair and I worked with Gail Petersen-Hock and Inev Lau 
+                 to collect state-level information."),
           
           tags$h4("Where can I find the data/code for this?"),
           tags$p("Please see this GitHub repository for more information:
-                 https://github.com/Kiron-Ang/VacState.
+                 https://github.com/kiron-ang/VacState.
                  If you have any other questions, please feel free to email
                  me at kiron_ang1@baylor.edu!")
       )
